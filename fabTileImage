@@ -1,0 +1,19 @@
+#!/bin/bash
+dpi=`identify -format "%[fx:int(resolution.x)]" -units PixelsPerInch $1`
+
+arrayParams=$2
+xTilingNum=${arrayParams:0:1}
+yTilingNum=${arrayParams:2:1}
+
+cloneNum="";
+copies="$(($xTilingNum*$yTilingNum))"
+for i in `seq 2 $copies`
+do
+    cloneNum="$cloneNum +clone"
+done
+
+filename=`echo $1 | rev | cut -f 2- -d '.' | rev`
+separator="_"
+extension=".png"
+outName=$2$separator$filename$extension
+montage $1 $cloneNum  -tile $2 -geometry +0+0 -units PixelsPerInch -density "$((dpi))" $outName
